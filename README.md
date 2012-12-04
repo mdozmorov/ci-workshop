@@ -1,4 +1,4 @@
-ci-workshop
-===========
+R/Bioconductor for Cancer Informatics
+=====================================
 
-Cancer informatics workshop at Rajiv Gandhi
+This package contains code, data, and documentation related to a R/Bioconductor workshop presented in January 2013 at Rajiv Gandhi Centre for Biotechnology.
