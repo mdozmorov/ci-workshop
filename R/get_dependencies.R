@@ -1,7 +1,11 @@
 # Install required packages
 
 required.packages = c()
-required.bioC.packages = c("affy")
+required.bioC.packages = c("affy", "GEOquery",
+    "gplots", "preprocessCore", "topGO", "hgu133a.db",
+    "hgu95a2probe", "Biostrings", "Biobase",
+    "gcrma", "limma", "annotate", "hgu95av2.db",
+    "pamr", "e1071")
 
 for (pkg in required.packages) {
     if (!require(pkg, character.only=T))
