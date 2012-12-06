@@ -5,7 +5,9 @@ required.bioC.packages = c("affy", "GEOquery",
     "gplots", "preprocessCore", "topGO", "hgu133a.db",
     "hgu95a2probe", "Biostrings", "Biobase",
     "gcrma", "limma", "annotate", "hgu95av2.db",
-    "pamr", "e1071")
+    "pamr", "e1071", "ShortRead", "Rsamtools",
+    "GenomicRanges", "IRanges", "DESeq", "edgeR", "goseq",
+    "SRAdb", "GEOmetadb")
 
 for (pkg in required.packages) {
     if (!require(pkg, character.only=T))
@@ -33,6 +35,8 @@ ensure.dir("data")
 ensure.dir("data/cel")
 
 ensure.downloaded("http://www-stat.stanford.edu/~tibs/PAM/Rdist/khan.txt")
+ensure.downloaded("http://gbnci.abcc.ncifcrf.gov/geo/GEOmetadb.sqlite.gz")
+ensure.downloaded("http://watson.nci.nih.gov/~zhujack/SRAmetadb.sqlite.gz")
 
 su.base = "http://cals.arizona.edu/~anling/MCB516/data_lecture13/"
 su.cels = c("Brain_1.CEL", "Brain_2.CEL", 
