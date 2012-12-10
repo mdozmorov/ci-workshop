@@ -3,7 +3,7 @@ Day 1 (Jan 16)
 
 - Morning: Welcome and lectures
 - 1:30 - 3:30   | Introduction to R/Bioconductor (CG)
-- 4:00 - 5:00   | Statistics for microarray analysis (CG)
+- 4:00 - 5:00   | Data analysis and descriptive statistics (CG)
 
 Day 2 (Jan 17)
 ~~~~~~~~~~~~~~
