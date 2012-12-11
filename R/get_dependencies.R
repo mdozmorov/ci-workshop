@@ -3,11 +3,11 @@
 required.packages = c()
 required.bioC.packages = c("affy", "GEOquery",
     "gplots", "preprocessCore", "topGO", "hgu133a.db",
-    "hgu95a2probe", "Biostrings", "Biobase",
+    "hgu95av2.db", "Biostrings", "Biobase",
     "gcrma", "limma", "annotate", "hgu95av2.db",
     "pamr", "e1071", "ShortRead", "Rsamtools",
     "GenomicRanges", "IRanges", "DESeq", "edgeR", "goseq",
-    "SRAdb", "GEOmetadb")
+    "SRAdb", "GEOmetadb", "NeatMap")
 
 for (pkg in required.packages) {
     if (!require(pkg, character.only=T))

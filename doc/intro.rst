@@ -2,6 +2,18 @@
 Introduction to R/Bioconductor
 ==============================
 
+.. topic:: Mikhail Dozmorov & Cory Giles
+
+    Oklahoma Medical Research Foundation, OK, USA
+
+.. image:: img/logo-R.png
+    :scale: 175%
+    :align: center
+
+.. image:: img/bioconductor.jpg
+    :scale: 175%
+    :align: right
+
 Welcome & Schedule
 ==================
 
@@ -201,6 +213,9 @@ Transposition:
     red     1    2    3
     blue    7    8    9
 
+R data types: matrices
+======================
+
 Dimensions:
 
 .. code-block:: r
@@ -247,6 +262,9 @@ Lists are containers for *heterogeneous* objects.
     > lst[[3]]
     [1] 3.5 5
 
+R data types: lists
+===================
+
 Named indexing:
 
 .. code-block:: r
@@ -272,11 +290,7 @@ R data types: data frame
     2     5     4     3
     > df$Gene2
     [1] 2 4 7
-
-Apply a function across rows or columns:
-
-.. code-block:: r
-
+    # apply a function across rows or columns
     > apply(df, 1, mean)
     [1] 3.666667 4.000000 3.666667
     > apply(df, 2, mean)
@@ -389,6 +403,11 @@ R documentation system
     > ?read.table
     # search help for a substring
     > ??read
+    # to list all the defined variables in a package:
+    > library(affy)
+    > ls("package:affy")
+    # to view the source code for a function simply type its name
+    > ReadAffy
 
 List or view vignettes:
 
@@ -443,7 +462,54 @@ Summary: Part One
 Part Two: Basic Data Analysis and Statistics in R
 =================================================
 
+- Statistical methods in R
+- Power analysis and microarray experimental design
 
+Statistics with R
+=================
+
+.. code-block:: r
+
+    # First, load a dataset
+    > data(ALL)
+    > expression <- exprs(ALL) 
+    > myc <- expression["1827_s_at",]
+
+    > mean(myc) # see also min, max, median
+    8.372506
+
+    > quantile(myc)
+        0%      25%      50%      75%     100% 
+    7.688711 8.210462 8.339376 8.557417 9.582462 
+
+    > summary(myc)
+       Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    7.689   8.210   8.339   8.373   8.557   9.582 
+
+
+Power analysis: Basics
+======================
+
+- Question: How many samples will be needed to achieve a desired false negative rate (FNR)?
+- Depends on the statistical test that will be used to calculate differential expression (t-test, ANOVA, etc.)
+- R has built-in `power.t.test`, 
+- There is *always* a tradeoff between Type I and Type II errors
+
+Power analysis: Parameters
+==========================
+
+- n <- Sample size to collect or available
+- delta <- log2(FC) effect size
+- sigma <- "noise" or variability within groups
+- alpha <- type I error rate (FPR)
+- power <- (1 - FNR)
+
+For ANOVA:
+
+- number of treatment groups
+
+Uncategorized
+=============
 
 - The issue of correctly modeling ordered categorical data is complicated
 - For example, Grade I-IV glioma: the simplest approach is to treat all intervals as equal

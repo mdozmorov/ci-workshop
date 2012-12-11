@@ -8,3 +8,8 @@ Schedule
 ========
 
 .. include:: doc/schedule.rst
+
+TODO
+====
+
+- Figure out if rgl (required for NeatMap) is feasible to install
