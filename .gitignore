@@ -1,5 +1,6 @@
 .Rhistory
-/data
+data/*
+!data/questionnaire.csv
 *.swp
 *.swo
 *.pdf
