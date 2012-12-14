@@ -17,7 +17,7 @@ Introduction to R/Bioconductor
 Welcome & Schedule
 ==================
 
-.. include:: schedule.rst
+TODO
 
 What is R?
 ==========
@@ -62,10 +62,7 @@ Getting around in the R environment:
 - functions and classes
 - I/O and string manipulation
 
-Installing and using R packages:
-
-- CRAN
-- Bioconductor
+Installing and using R packages
 
 R data types: vector
 ====================
@@ -85,6 +82,9 @@ Subscripting:
     [1] 3 4 5
     > numbers[c(1,3,5)]
     [1] 3 5 7
+
+baz
+===
 
 Basic descriptive statistics:
 
@@ -121,10 +121,7 @@ Vectors must have a homogeneous type:
     > myVector
     [1] "1" "foo" "2"
 
-Also note:
-
-- Vectors are 1-indexed
-- Scalars are just vectors of length 1
+Vectors are 1-indexed and scalars are just vectors of length 1
 
 R data types: basic vectorized math
 ===================================
@@ -471,6 +468,7 @@ Statistics with R
 .. code-block:: r
 
     # First, load a dataset
+    > library(ALL)
     > data(ALL)
     > expression <- exprs(ALL) 
     > myc <- expression["1827_s_at",]
@@ -486,6 +484,15 @@ Statistics with R
        Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     7.689   8.210   8.339   8.373   8.557   9.582 
 
+
+Experimental design
+===================
+
+Why do a microarray study?
+
+- Class Comparison – given classes with membership known a priori, ﬁnd genes showing differences between classes.
+- Class Prediction - build a model characterizing known classes, and use the model to predict the class status of future samples
+- Class Discovery - identify subsets of samples based on their clustering behavior
 
 Power analysis: Basics
 ======================
