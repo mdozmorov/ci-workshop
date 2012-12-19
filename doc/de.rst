@@ -14,6 +14,8 @@ BAD ways to calculate DE
 - Order by FC or FC cutoff 
     - doesn't take variance into account
 - T-test 
+    - Estimates gene variance for each gene individually 
+        - With small sample sizes, a high probability that variance will be seriously underestimated for some genes
     - Prone to false positives on genes with low variance
     - Low "power"
 
@@ -42,10 +44,21 @@ Similar assumptions -> similar results
 
 Jeanmougin et al, 2010, PloS One.
 
+.. Useful links:
+    Simple limma explanation -http://www.bioconductor.org/help/course-materials/2009/BioC2009/labs/limma/limma.pdf
+    Simplified explanation of hierarchical models - http://www.nature.com/nbt/journal/v28/n4/pdf/nbt.1619.pdf
+    Explanation of SAM - http://odin.mdacc.tmc.edu/~kim/TeachBioinf/Week5/Lecture5-Feb11-08.pdf
+    Original limma paper - http://www.statsci.org/smyth/pubs/ebayes.pdf
+
 Foobar
 ======
 
 - Comparison with SAM
+
+
+A quick linear algebra refresher
+================================
+
 - Theoretical introduction
 - What is a design and contrast matrix
 - Worked example
