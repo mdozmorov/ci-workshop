@@ -8,6 +8,31 @@ Differential expression analysis with limma and SAM
 
 .. http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0012336
 
+Variability and gene expression
+===============================
+
+.. image:: img/de/ttest.png
+
+Variability and gene expression
+===============================
+
+.. image:: img/de/ttest.png
+    :scale: 70%
+
+T-test: 
+
+.. math::
+    :fontsize: 18
+
+    t = \frac{\bar{x_{1}} - \bar{x_{2}}}{s^{2}(n_{1}^{-1} + n_{2}{^{-1}})}
+
+With *pooled* sample variance:
+
+.. math::
+    s^{2} = \frac{\sum(x-\bar{x_{1}})^{2} + \sum(x-\bar{x_{2}})^{2}}{n_{1}+n_{2}-2}
+
+
+
 BAD ways to calculate DE
 ========================
 
@@ -50,10 +75,8 @@ Jeanmougin et al, 2010, PloS One.
     Explanation of SAM - http://odin.mdacc.tmc.edu/~kim/TeachBioinf/Week5/Lecture5-Feb11-08.pdf
     Original limma paper - http://www.statsci.org/smyth/pubs/ebayes.pdf
 
-Foobar
-======
-
-- Comparison with SAM
+LIMMA - LInear Models for Microarray Analysis
+=============================================
 
 
 A quick linear algebra refresher
@@ -62,3 +85,8 @@ A quick linear algebra refresher
 - Theoretical introduction
 - What is a design and contrast matrix
 - Worked example
+
+SAM - Significance Analysis of Microarrays
+==========================================
+
+foobar
