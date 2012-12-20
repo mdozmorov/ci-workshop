@@ -3,10 +3,18 @@ Differential expression analysis with limma and SAM
 ===================================================
 
 .. Day 2, Block 11:00-12:30 
-    The theoretical first part (~10m) of the talk will be given at the beginning of the block.
-    The practical part may be given immediately after or not.
+    The theoretical first part (~20-30m) of the talk will be given at the beginning of the block. (CG)
+    Followed by practical limma and SAM (MD)
 
 .. http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0012336
+
+Differential expression calculation
+===================================
+
+- Identifying differentially expressed genes between two conditions or groups of conditions
+- Identifying **significant** changes
+- **Many** genes, and many more genes than observations (arrays)
+- Multiple hypothesis testing
 
 Variability and gene expression
 ===============================
@@ -24,14 +32,71 @@ T-test:
 .. math::
     :fontsize: 18
 
-    t = \frac{\bar{x_{1}} - \bar{x_{2}}}{s^{2}(n_{1}^{-1} + n_{2}{^{-1}})}
+    t = \frac{\mu_{1} - \mu_{2}}{s^{2}(n_{1}^{-1} + n_{2}{^{-1}})}
 
 With *pooled* sample variance:
 
 .. math::
-    s^{2} = \frac{\sum(x-\bar{x_{1}})^{2} + \sum(x-\bar{x_{2}})^{2}}{n_{1}+n_{2}-2}
+    s^{2} = \frac{\sum^{i}(x_{i}-\mu_{1})^{2} + \sum^{j}(x_{j}-\mu_{2})^{2}}{n_{1}+n_{2}-2}
 
+T-test problems
+===============
 
+(TODO ILLUSTRATION)
+
+T-test problems
+===============
+
+- T-test statistic (and p-value) crucially depends on difference in means and variance, but... 
+- Hard to estimate variance with small sample size
+- No multiple hypothesis testing 
+    - Can be done with, e.g, Bonferroni correction, but with large loss of power
+
+.. - Assumes data is normally distributed
+
+(TODO illustration of how small samples from a normal can lead to small or big variance estimates)
+
+SAM: Significance Analysis of Microarrays (2001)
+================================================
+
+(TODO Overview figure)
+
+.. class:: footnote
+
+    Tusher, Tibshirani, and Chu, PNAS, 2001.
+
+SAM: Significance Analysis of Microarrays
+=========================================
+
+.. SAM tutorial: www.biostat.pitt.edu/biost2055/11/110202_W5_Lab2.doc
+.. Technical documentations: http://www-stat.stanford.edu/~tibs/SAM/sam.pdf
+    See especially section 17
+.. Nontechnical explanation: http://archive.sciencewatch.com/inter/aut/2008/08-oct/08octSWTibshirani/
+
+How does SAM improve on T-test?
+
+- Penalizes low-expressed (unreliable mean and variance) genes:
+    - Adds a constant "exchangeability factor" :math:`s0` to the denominator of its test statistic
+    - :math:`s0` is the same for all genes
+
+.
+
+.. math::
+    :fontsize: 22
+
+    d_{i} = \frac{\mu_{1} - \mu_{2}}{s_{i} + s_{0}}
+
+- :math:`d_{i}` - Test statistic of gene i: 
+- :math:`s_{i}` - Pooled standard deviation of gene i
+- **Larger** :math:`|d_{i}|` **means stronger (normalized) differential expression**
+
+SAM: Multiple hypothesis correction
+===================================
+
+(FDR correction)
+
+LIMMA - LInear Models for Microarray Analysis
+=============================================
 
 BAD ways to calculate DE
 ========================
@@ -44,8 +109,8 @@ BAD ways to calculate DE
     - Prone to false positives on genes with low variance
     - Low "power"
 
-General approaches to DE calculation
-====================================
+Modern approaches to DE calculation
+===================================
 
 **Homoscedastic** methods assume that each treatment group has the same variance:
 
@@ -75,18 +140,4 @@ Jeanmougin et al, 2010, PloS One.
     Explanation of SAM - http://odin.mdacc.tmc.edu/~kim/TeachBioinf/Week5/Lecture5-Feb11-08.pdf
     Original limma paper - http://www.statsci.org/smyth/pubs/ebayes.pdf
 
-LIMMA - LInear Models for Microarray Analysis
-=============================================
 
-
-A quick linear algebra refresher
-================================
-
-- Theoretical introduction
-- What is a design and contrast matrix
-- Worked example
-
-SAM - Significance Analysis of Microarrays
-==========================================
-
-foobar

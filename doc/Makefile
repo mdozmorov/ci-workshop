@@ -9,5 +9,5 @@ clean:
 .PHONY: clean
 
 %.pdf: %.rst slides.style
-	rst2pdf $< -b1 -o $@ -s slides.style
+	rst2pdf --use-floating-images $< -b1 -o $@ -s slides.style
 
