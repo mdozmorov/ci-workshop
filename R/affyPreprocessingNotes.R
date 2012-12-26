@@ -35,20 +35,21 @@ Start R on your laptop by clicking on the "R" icon.
 If you're using your own computer, install Bioconductor (if you haven't done so before) by starting R and then pasting or typing these commands. The installation will take a few minutes.
 
 > source("http://bioconductor.org/biocLite.R") # Import biocLite() function into R environment
-> biocLite() # Install or updated Bioconductor
+> biocLite() # Install or update Bioconductor
 
-Use the pull-down menu (File >> Change dir [Windows] or Misc >> Change working directory [Mac]) to go to the directory where you put the raw data (CEL files). Or use the following command to type in path to CEL files manually
+Use upper-right "R" icon to create a project into existing folder. Example: navigate to "/Users/mikhaildozmorov/Documents/ci-workshop/R". Or use the following command
 
-> setwd("your/working/directory/with/CEL/files") # Set your working directory
+> setwd("your/working/directory/with/CEL/files") # Set your working directory where you have access to CEL files
 
 Install, if necessary, and load the "library" that contains the Affymetrix microarray code we'll want to use with the command
                                                          
-> biocLite("affy") # Install affy package, if absent
+> biocLite("affy") # Install affy package
 > library(affy) # Load affy package
 
-Read the CEL files (first command below) and then summarize and normalize with MAS5 (second command below). This could take a few minutes.
+Read the CEL files (first command below), save expression values as a tab-separated text file, and then summarize and normalize with MAS5 (second command below). This could take a few minutes.
 
-> affy.data = ReadAffy(celfile.path="Su_CELs/")
+> affy.data = ReadAffy(celfile.path="../data/Su_CELs/")
+> write.table(exprs(affy.data),"Su_raw_matrix.txt", sep="\t") # Save unnormalized data
 > eset.mas5 = mas5(affy.data) # Summarize with MAS5 algorithm
 
 The variable 'eset.mas5' contains normalized expression values for all probesets, along with other information. Let's check its parameters
@@ -85,13 +86,13 @@ At this time let's log-transform the expression values to get a more normal dist
 
 Optional. In place of mas5 normalization above, we could choose many other ways to preprocess the data, such as RMA (which outputs log2-transformed expression values)
 
-> eset.rma <- justRMA(celfile.path="Su_CELs/") # RMA summarization of the CEL files
+> eset.rma <- justRMA(celfile.path="../data/Su_CELs/") # RMA summarization of the CEL files
 
 or GCRMA (which also outputs log2-transformed expression values)
 
 > biocLite("gcrma") # Install GCRMA package, if absent
 > library(gcrma) # Load GCRMA package
-> eset.rma <- justGCRMA(celfile.path="Su_CELs/") # GCRMA summarization of the CEL files
+> eset.rma <- justGCRMA(celfile.path="../data/Su_CELs/") # GCRMA summarization of the CEL files
 
 or dChip (also known as MBEI; not log-transformed)
 eset.dChip = expresso(affy.data, normalize.method="invariantset", 
@@ -117,10 +118,10 @@ Part I. Normalization of expression data
 
 Why normalize? Chips may have been hybridized to different amounts of RNA, for different amounts of time, with different batches of solutions, etc. Normalization should remove systematic biases and make any comparisons between chips more meaningful.
 If you performed Part 0 above, your data is already normalized. But if you got an unnormalized expression from another source, how could you normalize it?
-Download Su_raw_matrix.txt, an unnormalized matrix of the same Su data.
+
 Read an expression matrix in the form of a tab-delimited text file that you created or downloaded above. The first line contains column headers, and the first row (without a header field) contains gene identifiers.
 
-> exprSetRaw = read.delim("Su_raw_matrix.txt",sep="\ ") # Set separator as space
+> exprSetRaw = read.delim("Su_raw_matrix.txt",sep="\t") # Set separator as tab
 
 Calculate the trimmed mean of all expression values on each chip.
 A trimmed mean calculates a summary value that is somewhere between the mean and median of the set of values.
@@ -164,6 +165,7 @@ For further processing, rename your data
 
 Quantile normalization is often too extreme, but it's common for Affymetrix probe-level normalization (being part of MAS5). If you wish to use it, one way is to use a command from the "limma" package
 
+> biocLite("limma")
 > library(limma)
 > exprSet.quantile = normalizeQuantiles(exprSet)
 
@@ -175,7 +177,7 @@ Another common normalization choice (generally for 2-color arrays) is loess. We 
 Start by downloading brain.fetalbrain.2color.data.txt into your working directory.
 Read this fake 2-color file, indicating the columns for the Red and Green channels and the Red and Green backgrounds.
 
-> brain.fetalbrain.2color = read.maimages("brain.fetalbrain.2color.data.txt", 
+> brain.fetalbrain.2color = read.maimages("..data/brain.fetalbrain.2color.data.txt", 
 	columns=list(G="brain.1", R="fetal.brain.1", Gb="bg1", Rb="bg2"))
 
 Now we have the two channels of data which we can loess normalize
@@ -230,7 +232,7 @@ We can retrieve values from this environment in many different ways. Suppose tha
 > hgu95av2SYMBOL$"39900_at"
 
 If you want to get more than one object from an environment you also have
-a number of choices. You can convert the object infto a data frame, and subset if by your set of IDs. You can extract them one at a time using either a for
+a number of choices. You can convert the object info to a data frame, and subset if by your set of IDs. You can extract them one at a time using either a for
 loop or apply or eapply. It will be more efficient to use mget since it does the
 retrieval using internal code and is optimized. You may also want to turn the
 environment into a named list, so that you can perform different list operations
@@ -240,7 +242,7 @@ on it, this can be done using the function contents or as.list.
 > symbols[c("1000_at","1001_at","1002_f_at","1003_s_at"),] # Get annotations for several elements
 > symbols<-as.list(hgu95av2SYMBOL) # Get all elements as list
 > length(symbols) # How many elements total
-> names(symbols)[1:15]
+> names(symbols)
 
 However, it is recommended to do as the last step, using manufacturer's IDs throughout the analysis.
 
@@ -341,5 +343,11 @@ Lets look at the first four columns, for the first ten genes:
 > Table(gpl96)[1:10,1:4]
 
 You can also use Bioconductor annotation file for GPL96/HG-U133A by using library(hgu133a).
+
+Finally, clean out our working directory, and a workspace
+
+> # Cleanup, delete files
+> unlink(c("Su_raw_matrix.txt", "Su_mas5_matrix.txt", "Su_mas5calls.txt", "Su_mas5_trmean_norm.txt", "GDS858.soft.gz", "GPL96.soft"))
+> rm(list=ls()) # Remove all variables from the workspace
 
 

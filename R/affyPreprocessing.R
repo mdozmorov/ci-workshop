@@ -1,12 +1,13 @@
 source("http://bioconductor.org/biocLite.R") # Import biocLite() function into R environment
-# biocLite() # Install or updated Bioconductor
+biocLite() # Install or update Bioconductor
 
 # Preliminary steps: Image analysis and calculation of expression value
 setwd("your/working/directory/with/CEL/files") # Set your working directory
 # biocLite("affy") # Install affy package, if absent
+biocLite("affy") # Install affy package
 library(affy) # Load affy package
-affy.data <- ReadAffy(celfile.path="Su_CELs/")
-write.table(exprs(affy.data),"Su_raw_matrix.txt") # Save unnormalized data
+affy.data <- ReadAffy(celfile.path="../data/Su_CELs/")
+write.table(exprs(affy.data),"Su_raw_matrix.txt", sep="\t") # Save unnormalized data
 eset.mas5 <- mas5(affy.data) # Summarize with MAS5 algorithm
 eset.mas5 # A summary of AffyBatch object
 head(exprs(eset.mas5)) # Peek on the expression matrix
@@ -21,10 +22,10 @@ colnames(exprSet.nologs) = c("brain.1", "brain.2",
                              "fetal.liver.1", "fetal.liver.2", 
                              "liver.1", "liver.2")
 exprSet = log(exprSet.nologs, 2) # Log2-transformed expression
-eset.rma <- justRMA(celfile.path="Su_CELs/") # RMA summarization of the CEL files
-# biocLite("gcrma") # Install GCRMA package, if absent
+eset.rma <- justRMA(celfile.path="../data/Su_CELs/") # RMA summarization of the CEL files
+biocLite("gcrma") # Install GCRMA package, if absent
 library(gcrma) # Load GCRMA package
-eset.gcrma <- justGCRMA(celfile.path="Su_CELs/") # GCRMA summarization of the CEL files
+eset.gcrma <- justGCRMA(celfile.path="../data/Su_CELs/") # GCRMA summarization of the CEL files
 eset.dChip = expresso(affy.data, normalize.method="invariantset", 
                       bg.correct=FALSE, pmcorrect.method="pmonly",summary.method="liwong") # dCHIP summarization
 write.table(exprSet, file="Su_mas5_matrix.txt", quote=F, sep="\t")
@@ -36,7 +37,7 @@ data.mas5calls.calls = exprs(data.mas5calls)
 write.table(data.mas5calls.calls, file="Su_mas5calls.txt", quote=F, sep="\t")
 
 # Part I. Normalization of expression data
-exprSetRaw = read.delim("Su_raw_matrix.txt",sep="\ ") # Set separator as space 
+exprSetRaw = read.delim("Su_raw_matrix.txt",sep="\t") # Set separator as tab
 trmean.col.1 = mean(exprSetRaw[,1], trim=0.02) # Trimmed mean in the first column
 trmean = apply(exprSetRaw, 2, mean, trim=0.02) # Trimmed mean in all columns
 trmean
@@ -46,16 +47,15 @@ median = apply(exprSetRaw, 2, median)
 median
 mean.of.trmeans = mean(trmean)
 exprSet.trmean = exprSetRaw / trmean * mean.of.trmeans
-write.table(exprSet.trmean, file="Su_mas5_trmean_norm.txt", quote=F, sep="\t")
 boxplot(log2(exprSetRaw)) # Data before
 boxplot(log2(exprSet.trmean)) # And after trimmed mean normalization
 write.table(exprSet.trmean, file="Su_mas5_trmean_norm.txt", quote=F, sep="\t")
 exprSet = exprSet.trmean
-# biocLite("limma")
+biocLite("limma")
 library(limma)
 exprSet.quantile = normalizeQuantiles(exprSet)
 boxplot(log2(exprSet.quantile))
-brain.fetalbrain.2color = read.maimages("brain.fetalbrain.2color.data.txt", 
+brain.fetalbrain.2color = read.maimages("../data/brain.fetalbrain.2color.data.txt", 
                                         columns=list(G="brain.1", R="fetal.brain.1", Gb="bg1", Rb="bg2"))
 brain.fetalbrain.2color.loess = 
   normalizeWithinArrays(brain.fetalbrain.2color, method="loess")
@@ -64,7 +64,7 @@ plotMA(brain.fetalbrain.2color) # Print the figures before
 plotMA(brain.fetalbrain.2color.loess) # and after loess
 
 # Part II. Probe annotation
-# biocLite("annotate")
+biocLite("annotate")
 library("annotate")
 biocLite("hgu95av2.db") # Install, if not available
 library("hgu95av2.db")
@@ -78,20 +78,20 @@ symbols<-data.frame(ACCNUM=sapply(contents(hgu95av2ACCNUM), paste, collapse=", "
 symbols[c("1000_at","1001_at","1002_f_at","1003_s_at"),] # Get annotations for several elements
 heasymbols<-as.list(hgu95av2SYMBOL) # Get all elements as list
 length(symbols) # How many elements total
-names(symbols)[1:15]
+names(symbols)
 
 # Part III. Accessing probe sequence data.
-# biocLite("hgu95av2probe")
+biocLite("hgu95av2probe")
 library(hgu95av2probe)  # Opens library with probe sequence data.
 print.data.frame(hgu95av2probe[1:10,]) # Prints probe sequences and their positions for first two Affy IDs
-# biocLite("Biostrings")
+biocLite("Biostrings")
 library(Biostrings)
 pm <- DNAStringSet(hgu95av2probe$sequence)
 names(pm) <- hgu95av2probe$Probe.Set.Name # Stores probe sequences as DNAStringSet object. See HT-Seq manual for more details.
 head(pm) # Look what's there
 
 # Part IV. Reading the NCBI's GEO microarray SOFT files in R/BioConductor
-# biocLite("GEOquery")
+biocLite("GEOquery")
 library(Biobase)
 library(GEOquery)
 #Download GDS file, put it in the current directory, and load it:
@@ -133,3 +133,6 @@ Meta(gpl96)$title
 colnames(Table(gpl96))
 Table(gpl96)[1:10,1:4]
 
+# Cleanup, delete files
+unlink(c("Su_raw_matrix.txt", "Su_mas5_matrix.txt", "Su_mas5calls.txt", "Su_mas5_trmean_norm.txt", "GDS858.soft.gz", "GPL96.soft"))
+rm(list=ls()) # Remove all variables from the workspace
