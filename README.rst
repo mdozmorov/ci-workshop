@@ -33,6 +33,7 @@ TODO
 
 - Figure out if rgl (required for NeatMap) is feasible to install
 - Write "Prerequisites" section, to include links to R, RStudio, install Bioconductor
+- Have CEL files, GDS858.soft.gz, GPL96.soft available offline
 
 
 Additional Resources

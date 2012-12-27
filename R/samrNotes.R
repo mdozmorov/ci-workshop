@@ -1,3 +1,20 @@
+In this exercise we will be detecting differentially expressed genes between uninfected lung epithelial Calu-3 cells and cells infected with FRD440 strain of Pseudomonas aeruginosa.
+
+Let's load necessary libraries, and the data themselves.
+
+> library(affy) # Load affy package 
+> library(GEOquery)
+> #Download GDS file, put it in the current directory, and load it:
+> gds858 <- getGEO('GDS858', destdir=".") 
+> gds858<-getGEO(filename="GDS858.soft.gz") # If FTP doesn't work, read in from local file
+> eset <- GDS2eSet(gds858, do.log2=TRUE) # Convert the data to ESET object
+> help(ExpressionSet) # If needed, refresh your memory
+> pData(eset)$infection # Let's check the infection status
+> source("http://bioconductor.org/biocLite.R") # Import biocLite() function into R environment
+> biocLite("samr")
+> library(samr) # Load the library
+> library(limma) # To get access to normalizeQuantiles
+
 Let's check which infection statuses do we have
 
 > table(pData(eset)$infection) # How many samples are in each infection status
@@ -7,7 +24,7 @@ Select indexes of the columns associated with "uninfected" or "FRD440" infection
 > selected<-grep("uninfected|FRD440",pData(eset)$infection) # Select indexes
 > pData(eset)$infection[selected] # Check if the right infection status was selected
 
-We selected 4 "uninfected" samples and 4 "FRD440" samples. Let's make a vector of outcome measurements, defining froups of replicates. "Uninfected" samples are labeled as "1" and "FRD440" samples are labeled as "2".
+We selected 4 "uninfected" samples and 4 "FRD440" samples. Let's make a vector of outcome measurements, defining groups of replicates. "Uninfected" samples are labeled as "1" and "FRD440" samples are labeled as "2".
 
 > y=c(rep(1,4),rep(2,4)) # Vector of outcome measurements
 > y # Visualize it
@@ -37,8 +54,7 @@ In general, defining the cut-off is a subjective choice and there is no absolute
 > delta.table<-samr.compute.delta.table(samr.obj, min.foldchange=1.5) # Compute thresholds for different deltas
 > delta.table # Look at the whole range
 
-Note that the 
-Let's select delta with median FDR <10 - subset the whole delta table and take the first row.
+Let's select delta with median FDR <10% - subset the whole delta table and take the first row.
 
 > delta.table[delta.table[,"median FDR"] < 0.1,][1,] # Check delta corresponding to median FDR ~0.1
 
@@ -64,8 +80,8 @@ Let's have a look at actual differentially expressed genes
 We can write them in a clipboard, then paste into Excel. Or export them to files.
 
 # Write the results in clipboard
-> write.table(siggenes.table$genes.up,"clipboard",sep='\t') 
-> write.table(siggenes.table$genes.lo,"clipboard",sep='\t')
+> write.table(siggenes.table$genes.up,"genes.up.txt",sep='\t') 
+> write.table(siggenes.table$genes.lo,"genes.dn.txt",sep='\t')
 
 These results show pretty much everything we need to know. But what about getting annotations to the Affy probe IDs? Let's extract those IDs and annotate them.
 
@@ -84,8 +100,7 @@ We can simply get the platform data from GEO, and extract subsets of IDs.
 Or we can use biomaRt.
 
 # Use biomaRt for annotation
-# source("http://bioconductor.org/biocLite.R") # Import biocLite() function into R environment
-# biocLite("biomaRt") 
+> biocLite("biomaRt") 
 > library(biomaRt)
 > listDatasets(useMart("ensembl")) # List available datasets
 > mart<-useMart("ensembl", dataset="hsapiens_gene_ensembl") # Load BIOMART dataset for homo sapiens
@@ -101,4 +116,10 @@ Now we know that our IDs correspond to "affy_hg_u133a" attributes in Biomart. Le
 # Get annotations from Biomart
 > genes.up<-getBM(attributes=c('affy_hg_u133a','external_gene_id','description'), filters='affy_hg_u133a', values=up.ids, mart=mart)#, uniqueRows=T)
 
-Do that for the downregulated genes, and write the results to clipboard/file.
+Do that for the downregulated genes, and write the results to file.
+
+Clean your workspace
+
+> unlink(c("GDS858.soft.gz","genes.up.txt","genes.dn.txt","GPL96.soft"))
+
+
