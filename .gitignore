@@ -3,7 +3,6 @@ data/*
 !data/questionnaire.csv
 *.swp
 *.swo
-*.pdf
 .Rproj.user
 *.Rout
 *.RData
