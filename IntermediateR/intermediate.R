@@ -72,7 +72,7 @@ driver <- dbDriver("SQLite")
 db <- dbConnect(driver, dbname="GEOmetadb.sqlite")
 dbListTables(db)
 # SELECT statement
-dbGetQuery(db, "SELECT ID,gds,update_date FROM gds LIMIT 5")
+df <- dbGetQuery(db, "SELECT ID,gds,update_date FROM gds LIMIT 5")
 
 # Create and modify an in-memory database
 db <- dbConnect(SQLite(), dbname=":memory:")
