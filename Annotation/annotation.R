@@ -158,12 +158,12 @@ fit.c <- eBayes(fit.c)
 tt <- topTable(fit.c, number=nrow(exprs(ALL)))
 
 p.values <- tt$adj.P.Val
-names(p.values) <- tt$ID
+names(p.values) <- rownames(tt)
 
 result <- decideTests(fit.c)
 sig.probes <- rownames(result)[result!=0]
 
-# (Feel free to also check out vennDiagram on fit.c)
+# (Feel free to also check out vennDiagram on result)
 
 # What were the symbols of these significant probes?
 xx <- as.list(hgu95av2SYMBOL)
