@@ -1,0 +1,31 @@
+S1	S2	S3	S4	S5	S6
+f	c	f	g	f	c
+b	j	e	x	x	x
+g	e	w	c	s	g
+r	u	x	p	z	y
+c	y	d	s	c	z
+s	x	s	d	b	g
+v	m	o	w	v	b
+j	d	c	r	q	y
+e	w	t	l	g	x
+u	h	g	a	k	w
+n	k	j	k	n	f
+h	i	r	h	w	z
+i	q	p	i	h	g
+z	s	i	o	y	i
+m	g	l	v	e	k
+o	l	u	e	o	m
+t	c	z	u	p	s
+d	j	b	q	m	v
+f	e	n	f	f	x
+b	u	y	m	x	q
+g	y	f	z	s	z
+r	x	e	j	z	m
+	g		t		
+	l		x		
+	c				
+	j				
+	e				
+	u				
+	y				
+	x				

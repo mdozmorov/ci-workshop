@@ -3,5 +3,11 @@ data/*
 !data/questionnaire.csv
 *.swp
 *.swo
+<<<<<<< HEAD
 *.pdf
 .Rproj.user
+=======
+.Rproj.user
+*.Rout
+*.RData
+>>>>>>> 86b51159ffa443c6469cd84d7e76075d195ee4a4
