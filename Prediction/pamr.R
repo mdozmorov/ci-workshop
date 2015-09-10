@@ -1,9 +1,11 @@
 source("http://bioconductor.org/biocLite.R") # Import biocLite() function into R environment
 biocLite("pamr")
 library(pamr)
-response.data<-pamr.from.excel("../data/gds858.q.pamr.txt",21, sample.labels=T)
+response.data<-pamr.from.excel("gds858.q.pamr.txt",21, sample.labels=T)
+response.data <- pamr.from.excel("tmp.txt", 119, sample.labels=T)
+class(response.data$y) <- "numeric"
 summary(response.data) # Get the idea what's inside
-# pamr.menu(response.data) # All automatic, do only after understanding all steps below
+pamr.menu(response.data) # All automatic, do only after understanding all steps below
 response.train<-pamr.train(response.data) # Train the set based on provided class labels
 response.train # See what's inside
 response.cv<-pamr.cv(response.train,response.data) # Cross-validate the classifier

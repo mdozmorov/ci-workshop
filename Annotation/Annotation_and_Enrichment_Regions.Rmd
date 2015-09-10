@@ -37,12 +37,18 @@ colnames(as.data.frame(annotatedPeak)) # Check column names in the annotation re
 So, we have "distancetoFeature" column, and can subset the annotated peaks by it. For convenience, we use designated function for it, finding peaks within 10K around transcripts.  Let us also check where they are located.
 
 ```{r}
-t1 <- findOverlappingPeaks(peaks.bed, annotatedPeak, maxgap=10000, select="first", NameOfPeaks1 = "peaks", NameOfPeaks2 = "TSS", annotate=1)
-names(t1)
-overlappingPeaks <- t1$OverlappingPeaks
-pie(table(overlappingPeaks$overlapFeature))
+# t1 <- findOverlappingPeaks(group1.bed, annotatedPeak, maxgap=2000, select="first", NameOfPeaks1 = "peaks", NameOfPeaks2 = "TSS", annotate=1) # Very time consuming for lagre list of peaks
+t1 <- readRDS("group1.t1.RDS")
+names(t1) # Names of the columns
 
-#makeVennDiagram(RangedDataList(peaks.bed, myFullAnnotation), NameOfPeaks = c("peaks", "TSS"), maxgap=0, minoverlap=1, totalTest = 100, cex=1, counts.col= "red", useFeature=FALSE)
+overlappingPeaks <- t1$OverlappingPeaks # overlapping peaks with maximum gap 2kb
+pie(table(overlappingPeaks$overlapFeature)) # and a pie graph describing the distribution of relative position of peaks1 to peaks2 for overlapping peaks
+
+head(as.data.frame(t1$MergedPeaks)) # merged overlapping peaks
+head(as.data.frame(t1$Peaks1withOverlaps)) # the peaks in peaks1 that overlaps with peaks in peaks2
+head(as.data.frame(t1$Peaks2withOverlaps)) # the peaks in peaks2 that overlap with peaks in peaks1
+
+group1.venn <- makeVennDiagram(RangedDataList(group1.bed, myFullAnnotation), NameOfPeaks = c("peaks", "TSS"), maxgap=0, minoverlap=1, totalTest = 100, cex=1, counts.col= "red", useFeature=FALSE)
 ```
 
 The most interesting is to understand what, if anything, those genes are doing. We check their biological processes and molecular functions.
