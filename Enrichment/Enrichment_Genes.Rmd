@@ -135,3 +135,16 @@ fisher.test(ct, alternative = "greater")
 ```
 
 We can wrap it up into a "universal" function that does either GO or KEGG enrichment analysis. see the example at [https://github.com/mdozmorov/MDmisc/blob/master/R/gene_enrichment.R](https://github.com/mdozmorov/MDmisc/blob/master/R/gene_enrichment.R)
+
+
+# Exercise
+
+Write a function that takes a vector of significantly  differentially expressed probes and an annotation name, and uses Fisher's Exact test to test whether any chromosomes are significantly enriched or depleted for differentially expressed genes. Be sure to correct for multiple testing.
+
+To do this, you might find the "get" function useful. For example:
+
+```
+get(paste("hgu95av2", "CHRLOC", sep=""))
+```
+
+returns the CHRLOC map for the hgu95av2 annotation package, assuming it has been loaded already by library().

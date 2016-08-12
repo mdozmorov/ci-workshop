@@ -1,5 +1,5 @@
 ---
-title: "Affy preprocessing"
+title: "Preprocessing"
 author: "Mikhail Dozmorov"
 output:
   html_document:
@@ -19,12 +19,11 @@ options(stringsAsFactors = FALSE)
 set.seed(1)
 ```
 
-```{r}
+```{r echo=FALSE}
 # http://jura.wi.mit.edu/bio/education/bioinfo2007/arrays/array_exercises_1R.html
 # http://bioconductor.org/packages/release/bioc/vignettes/annotate/inst/doc/annotate.pdf
 # http://manuals.bioinformatics.ucr.edu/home/R_BioCondManual#biocon_affypack
 # http://www2.warwick.ac.uk/fac/sci/moac/people/students/peter_cock/r/geo/
-
 ```
 
 # Microarray data retrieval and preprocessing
@@ -33,24 +32,13 @@ set.seed(1)
 
 You'll be using a sample of expression data from a study using Affymetrix (one color) U95A arrays that were hybridized to tissues from fetal and human liver and brain tissue. Each hybridization was performed in duplicate. Many other tissues were also profiled but won't be used for these exercises.
 
-What we'll be doing to analyze these data:
-
-- preprocess the raw data (summarize probe measurements into one measurement for each probe)
-- normalize data from these eight chips
-- calculate Absent/Present calls which attempts to label genes that are "expressed"
-- calculate expression ratios of genes between two different tissues
-- use a common statistical test to identify differentially expressed genes
-- flag low intensity data (most probably background noise)
-- cluster a differentially expressed subset of all genes to identify those with similar expression profiles
-- try to find what functions specific groups of genes (with similar expression profiles) have in common
-
 ### Preliminary steps: Image analysis and calculation of expression value
 
 As described in [Su et al., 2002](https://www.ncbi.nlm.nih.gov/pubmed/11904358?dopt=Abstract), human tissue samples were hybridized on Affymetrix (one-color) arrays and chips were scanned. For each tissue, at least two independent samples were hybridized to separate chips.
 
 Scanned images were quantified (including measurement of background) using standard software.
 
-### Part 0. Preprocessing and normalization of Affymetrix expression data
+### Preprocessing and normalization of Affymetrix expression data
 
 Data from a probeset (a series of oligos designed to a specific gene target) needs to be summarized by calculating an expression values for that probeset. This can be done using a Bioconductor/R version of the methods in the Microarray Suite 5.0 (MAS5, the standard Affymetrix algorithm) used by the Affymetrix software suite.
 
@@ -165,7 +153,7 @@ table(data.mas5calls.calls[, 1])
 
 Other methods of normalization available: ?justPlier, ?expresso
 
-### Part I. Normalization of expression data
+### Normalization of expression data
 
 Why normalize? Chips may have been hybridized to different amounts of RNA, for different amounts of time, with different batches of solutions, etc. Normalization should remove systematic biases and make any comparisons between chips more meaningful.
 If you performed Part 0 above, your data is already normalized. But if you got an unnormalized expression from another source, how could you normalize it?
@@ -277,79 +265,3 @@ par(op)
 
 How do the figures differ?
 
-### Part II. Probe annotation
-
-Any given experiment typically involves a set of known identifers (probes
-in the case of a microarray experiment). These identifers are typically unique
-(for any manufacturer). But having Affymetrix IDs ("1001_at") as probe identifiers is not very helpful when we want to know which gene a probe is actually assesses. There are numerous annotation packages available on Bioconductor at [http://www.bioconductor.org/packages/release/data/annotation/](http://www.bioconductor.org/packages/release/data/annotation/).
-
-We will consider the AFFymetrix human gene chip, hgu95av2, for our example. We first load this chip's package and annotate.
-
-```{r}
-library("annotate")
-# biocLite("hgu95av2.db") # Install, if not available
-library("hgu95av2.db")
-ls("package:hgu95av2.db") # Objects in this package
-```
-
-We see the listing of twenty or thirty different R objects in this package. Most
-of them represent mappings from the identifiers on the Affymetrix chip to the
-different biological resources and you can find out more about them by using the
-R help system, since each has a manual page that describes the data together
-with other information such as where, when and what files were used to construct
-the mappings. Also, each meta-data package has one object that has the same
-name as the package basename, in this case it is hgu95av2. This is function
-and it can be invoked to find out some of the different statistics regarding the
-mappings that were done. Its manual page lists all data resources that were
-used to create the meta-data package.
-
-```{r}
-hgu95av2() # Description of an object
-```
-
-Now let's consider a specific object, say the hgu95av2SYMBOL object.
-
-```{r}
-hgu95av2SYMBOL # Check specific object
-```
-
-If we type its name we see that it is an R environment; all this means is that it
-is a special data type that is efficient at storing and retrieving mappings between
-symbols (the Affymetrix identifiers) and associated values (the gene symbols).
-We can retrieve values from this environment in many different ways. Suppose that we are interested in finding the gene symbol for the Affymetrix probe, 39900_at. Then we can do it in any one of the following ways:
-
-```{r}
-get("39900_at",env=hgu95av2SYMBOL) # Accessing elements
-hgu95av2SYMBOL[["39900_at"]]
-hgu95av2SYMBOL$"39900_at"
-```
-
-If you want to get more than one object from an environment you also have
-a number of choices. You can convert the object info to a data frame, and subset if by your set of IDs. You can extract them one at a time using either a for
-loop or apply or eapply. It will be more efficient to use mget since it does the
-retrieval using internal code and is optimized. You may also want to turn the
-environment into a named list, so that you can perform different list operations
-on it, this can be done using the function contents or as.list.
-
-```{r}
-symbols<-data.frame(ACCNUM=sapply(Biobase::contents(hgu95av2ACCNUM), paste, collapse=", "), SYMBOL=sapply(Biobase::contents(hgu95av2SYMBOL), paste, collapse=", "), DESC=sapply(Biobase::contents(hgu95av2GENENAME), paste, collapse=", ")) # Get all elements as data frame
-symbols[c("1000_at","1001_at","1002_f_at","1003_s_at"),] # Get annotations for several elements
-symbols<-as.list(hgu95av2SYMBOL) # Get all elements as list
-length(symbols) # How many elements total
-names(symbols)
-```
-
-However, it is recommended to do as the last step, using manufacturer's IDs throughout the analysis.
-
-### Part III. Accessing probe sequence data.
-
-```{r}
-# biocLite("hgu95av2probe")
-library(hgu95av2probe)  # Opens library with probe sequence data.
-print.data.frame(hgu95av2probe[1:10,]) # Prints probe sequences and their positions for first two Affy IDs
-# biocLite("Biostrings")
-library(Biostrings)
-pm <- DNAStringSet(hgu95av2probe$sequence)
-names(pm) <- hgu95av2probe$Probe.Set.Name # Stores probe sequences as DNAStringSet object. See HT-Seq manual for more details.
-head(pm) # Look what's there
-```

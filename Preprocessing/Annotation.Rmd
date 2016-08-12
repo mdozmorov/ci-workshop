@@ -1,0 +1,107 @@
+---
+title: "Annotation"
+author: "Mikhail Dozmorov"
+output:
+  html_document:
+    toc: true
+    theme: united
+date: "`r Sys.Date()`"
+---
+
+Material is public domain
+
+```{r setup, echo=FALSE}
+# Set up the environment
+library(knitr) 
+opts_chunk$set(cache.path='cache/', fig.path='img/', cache=T, tidy=T, fig.keep='high', echo=T, dpi=100, out.width=700)
+options(replace.assign=TRUE, width=220)
+options(stringsAsFactors = FALSE)
+set.seed(1)
+```
+
+### Probe annotation
+
+Any given experiment typically involves a set of known identifers (probes
+in the case of a microarray experiment). These identifers are typically unique
+(for any manufacturer). But having Affymetrix IDs ("1001_at") as probe identifiers is not very helpful when we want to know which gene a probe is actually assesses. There are numerous annotation packages available on Bioconductor at [http://www.bioconductor.org/packages/release/data/annotation/](http://www.bioconductor.org/packages/release/data/annotation/).
+
+We will consider the AFFymetrix human gene chip, hgu133a, for our example. We first load this chip's package and annotate.
+
+```{r}
+library("annotate")
+# biocLite("hgu133a.db") # Install, if not available
+library("hgu133a.db")
+ls("package:hgu133a.db") # Objects in this package
+```
+
+We see the listing of twenty or thirty different R objects in this package. Most of them represent mappings from the identifiers on the Affymetrix chip to the different biological resources and you can find out more about them by using the R help system, since each has a manual page that describes the data together with other information such as where, when and what files were used to construct the mappings. Also, each meta-data package has one object that has the same name as the package basename, in this case it is hgu133a. This is function and it can be invoked to find out some of the different statistics regarding the mappings that were done. Its manual page lists all data resources that were used to create the meta-data package.
+
+```{r}
+hgu133a() # Description of an object
+```
+
+Now let's consider a specific object, say the hgu133aSYMBOL object.
+
+```{r}
+hgu133aSYMBOL # Check specific object
+```
+
+If we type its name we see that it is an R environment; all this means is that it is a special data type that is efficient at storing and retrieving mappings between symbols (the Affymetrix identifiers) and associated values (the gene symbols). We can retrieve values from this environment in many different ways. Suppose that we are interested in finding the gene symbol for the Affymetrix probe, 39900_at. Then we can do it in any one of the following ways:
+
+```{r}
+get("1316_at", env=hgu133aSYMBOL) # Accessing elements
+hgu133aSYMBOL[["1316_at"]]
+hgu133aSYMBOL$"1316_at"
+```
+
+If you want to get more than one object from an environment you also have a number of choices. You can convert the object info to a data frame, and subset if by your set of IDs. You can extract them one at a time using either a for loop or apply or eapply. It will be more efficient to use `mget` since it does the retrieval using internal code and is optimized. You may also want to turn the environment into a named list, so that you can perform different list operations on it, this can be done using the function contents or as.list.
+
+```{r}
+symbols<-data.frame(ACCNUM=sapply(Biobase::contents(hgu133aACCNUM), paste, collapse=", "), SYMBOL=sapply(Biobase::contents(hgu133aSYMBOL), paste, collapse=", "), DESC=sapply(Biobase::contents(hgu133aGENENAME), paste, collapse=", ")) # Get all elements as data frame
+symbols[c("1053_at","121_at","1294_at","1316_at"),] # Get annotations for several elements
+symbols<-as.list(hgu133aSYMBOL) # Get all elements as list
+length(symbols) # How many elements total
+names(symbols)[1:5]
+```
+
+You can convert a particular annotation mapping to a list with as.list:
+
+```{r}
+probe2entrez <- as.list(hgu133aENTREZID)
+probe2entrez[1:5]
+```
+
+Or the reverse mapping:
+
+```{r}
+entrez2probe <- as.list(revmap(hgu133aENTREZID))
+entrez2probe[1:5]
+```
+
+If you have a set of probes, you can use these mappings:
+
+```{r}
+probes <- c("215134_at", "221987_s_at", "214740_at", "205903_s_at")
+entrez <- unlist(probe2entrez[probes])
+```
+
+The "unlist" method above only works when you have a "many-to-one" or "one-to-one" mapping of keys to values. If you have "one-to-many" or "many-to-many", you will  get back several mapped values for each key:
+
+```{r}
+entrez2probe[entrez]
+```
+
+However, it is recommended to do as the last step, using manufacturer's IDs throughout the analysis.
+
+### Accessing probe sequence data.
+
+```{r}
+# biocLite("hgu133aprobe")
+library(hgu133aprobe)  # Opens library with probe sequence data.
+print.data.frame(hgu133aprobe[1:10,]) # Prints probe sequences and their positions for first two Affy IDs
+# biocLite("Biostrings")
+library(Biostrings)
+pm <- DNAStringSet(hgu133aprobe$sequence)
+names(pm) <- hgu133aprobe$Probe.Set.Name # Stores probe sequences as DNAStringSet object. See HT-Seq manual for more details.
+head(pm) # Look what's there
+```

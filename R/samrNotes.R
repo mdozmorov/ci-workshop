@@ -1,3 +1,15 @@
+###################################################
+# Differential expression analysis
+# Mikhail Dozmorov
+# Workshop at Rajiv Gandhi Center for Biotechnology
+# January 16-18, 2013
+# Material is public domain
+###################################################
+
+#####################
+# SAM (Significance Analysis of Microarrays)
+##################### 
+
 In this exercise we will be detecting differentially expressed genes between uninfected lung epithelial Calu-3 cells and cells infected with FRD440 strain of Pseudomonas aeruginosa.
 
 Let's load necessary libraries, and the data themselves.
@@ -49,7 +61,7 @@ Let's check what we have. Everything obvious, isn't it?
 > names(samr.obj) # Get object names from samr.obj
 
 Now we have to choose the delta value that is able to give the best compromise in terms of called genes, false genes and False Discovery Rate (FDR). In microarray analysis is very important to have statistically robust results, but we have keep in mind that too small sized results are not able to describe the biological meaning of the experiment. In any case, keeping the FDR < 10% (the number of false positives is < 10%) is pretty safe in most of the cases.
-In general, defining the cut-off is a subjective choice and there is no absolute “best” way to do it.
+In general, defining the cut-off is a subjective choice and there is no absolute best way to do it.
 
 > delta.table<-samr.compute.delta.table(samr.obj, min.foldchange=1.5) # Compute thresholds for different deltas
 > delta.table # Look at the whole range
@@ -122,4 +134,30 @@ Clean your workspace
 
 > unlink(c("GDS858.soft.gz","genes.up.txt","genes.dn.txt","GPL96.soft"))
 
+############
+# Exercise 1
+############
+
+Using ALL dataset, find differentially expressed genes by limma and SAM. Start by importing and exploring the data.
+
+> source("http://www.bioconductor.org/biocLite.R")
+> biocLite("ALL") # Install ALL package
+> library("ALL") # Load ALL package
+> data("ALL") # Attach ALL data to the workspace
+> ALL # Check what's in there
+
+ got expression matrix with  128 samples and 12625 genes, and associated phenotypic data. We can looks at the parameters available to us in the phenotypic data, and the results of molecular biology testing for the 128 samples.
+
+> names(pData(ALL)) # Check what phenotype data we have
+> ALL$mol.biol # Results of molecular biology testing for the 128 samples
+
+Ignoring the samples which came back negative on this test (NEG), most have been classified as having a translocation between chromosomes 9 and 22 (BCR/ABL), or a translocation between chromosomes 4 and 11 (ALL1/AF4).
+
+For the purposes of this example, we are only interested in these two subgroups, so we will create a filtered version of the dataset using this as a selection criteria:
+
+> eset <- ALL[, ALL$mol.biol %in% c("BCR/ABL", "ALL1/AF4")] # Select a subset of the data
+
+The resulting variable, eset, contains just 47 samples - each with the full 12,625 gene expression levels.
+
+Use eset@mol.bio as a factor for building matrix for lima, and for defining classes for SAM.
 

@@ -19,7 +19,7 @@ options(stringsAsFactors = FALSE)
 set.seed(1)
 ```
 
-### Part IV. Reading the NCBI's GEO microarray SOFT files in R/BioConductor
+# Reading the NCBI's GEO microarray SOFT files in R/BioConductor
 
 GEO expression omnibus, [https://www.ncbi.nlm.nih.gov/geo/](https://www.ncbi.nlm.nih.gov/geo/), is the largest repository of gene expression data. It may have the data you're looking for, saving you time and money to do the experiment yourself. 
 
