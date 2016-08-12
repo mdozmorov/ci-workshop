@@ -4,6 +4,7 @@ data/*
 *.swp
 *.swo
 *.pdf
+*.docx
 *.html
 .DS*
 *.Rproj

@@ -1,5 +1,5 @@
 RST=$(wildcard *.rst)
-PDF=$(patsubst %.rst,%.pdf,$(RST))
+PDF=$(patsubst %.rst,%.docx,$(RST))
 
 all: $(PDF)
 
@@ -8,6 +8,6 @@ clean:
 
 .PHONY: clean
 
-%.pdf: %.rst slides.style
-	rst2pdf --use-floating-images $< -b1 -o $@ -s slides.style
-
+%.docx: %.rst slides.style
+#	rst2pdf --use-floating-images $< -b1 -o $@ -s slides.style
+	pandoc -f rst -t docx $< -o $@
