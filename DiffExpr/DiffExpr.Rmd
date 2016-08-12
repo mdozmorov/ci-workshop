@@ -39,12 +39,12 @@ Limma
 ===
 Limma is a software package for the analysis of gene expression microarray data, especially the use of linear models for analyzing designed experiments and the assessment of differential expression. The package includes pre-processing capabilities for two-color spotted arrays. The differential expression methods apply to all array platforms and treat Affymetrix, single channel and two channel experiments in a unified way. The methods are described in [Smyth 2004] (https://www.ncbi.nlm.nih.gov/pubmed/15297296) and in the [limma manual](http://bioconductor.org/packages/release/bioc/vignettes/limma/inst/doc/usersguide.pdf). An illustrated introduction for the GUI packages can be found at Walter+Eliza Hall Bioinformatics Institute of Medical Research [(WEHI)](http://bioinf.wehi.edu.au/limma/index.html).
 
-We will be analyzing tissue-specific differences from [Su et al., 2002](http://www.ncbi.nlm.nih.gov/pubmed/11904358). Datasets for [human](https://www.ncbi.nlm.nih.gov/sites/GDSbrowser?acc=GDS181) and [mouse](https://www.ncbi.nlm.nih.gov/sites/GDSbrowser?acc=GDS182) transcriptomes in all tissues are available from Gene Expression Omnibus.
+We will be analyzing tissue-specific differences from [Su et al., 2002](http://www.ncbi.nlm.nih.gov/pubmed/11904358). Datasets for [human](https://www.ncbi.nlm.nih.gov/sites/GDSbrowser?acc=GDS181) and [mouse](https://www.ncbi.nlm.nih.gov/sites/GDSbrowser?acc=GDS182) transcriptomes in all tissues are available from Gene Expression Omnibus. We will be analyzing a subset of brain-liver samples, [download here](http://jura.wi.mit.edu/bio/education/bioinfo2007/arrays/Su_CELs.zip).
 
 Prepare the data:
 
 ```{r, warning=FALSE}
-eset.rma <- justRMA(celfile.path="data/Su_CELs/") # RMA summarization of the CEL files
+eset.rma <- justRMA(celfile.path = "data/Su_CELs/") # RMA summarization of the CEL files
 pData(eset.rma) # Check what samples we have
 ```
 
