@@ -12,3 +12,4 @@ data/*
 *.RData
 img
 cache
+results

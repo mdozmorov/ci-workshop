@@ -1,13 +1,12 @@
 ---
 title: "Differential Expression Analysis"
 author: "Mikhail Dozmorov"
-date: "October 25, 2014"
-output: html_document
+output:
+  html_document:
+    toc: true
+    theme: united
+date: "`r Sys.Date()`"
 ---
-Workshop at Rajiv Gandhi Center for Biotechnology
-
-January 16-18, 2013
-
 Material is public domain
 
 ```{r setup, echo=FALSE}
@@ -44,7 +43,7 @@ We will be analyzing tissue-specific differences from [Su et al., 2002](http://w
 Prepare the data:
 
 ```{r, warning=FALSE}
-eset.rma <- justRMA(celfile.path = "data/Su_CELs/") # RMA summarization of the CEL files
+eset.rma <- justRMA(celfile.path = "../data/Su_CELs/") # RMA summarization of the CEL files
 pData(eset.rma) # Check what samples we have
 ```
 
@@ -141,7 +140,7 @@ We'll be comparing gene expression changes of lung cells in response to differen
 ```{r, warning=FALSE}
 # Download GDS file, put it in the current directory, and load it:
 # gds858 <- getGEO('GDS858', destdir="data") 
-gds858<-getGEO(filename="data/GDS858.soft.gz", destdir="data") # If FTP doesn't work, read in from local file
+gds858<-getGEO(filename="../data/GDS858.soft.gz", destdir="data") # If FTP doesn't work, read in from local file
 eset <- GDS2eSet(gds858, do.log2=TRUE) # Convert the data to ESET object
 # help(ExpressionSet) # If needed, refresh your memory
 ```
@@ -259,7 +258,7 @@ We can simply get the platform data from GEO, and extract subsets of IDs:
 # Annotate Affy probe IDs
 Meta(gds858)$platform # Check which platform do we have
 # gpl96 <- getGEO('GPL96', destdir = "data") # Get the data for this platform from GEO
-gpl96 <- getGEO(filename = "data/GPL96.soft", destdir = "data")
+gpl96 <- getGEO(filename = "../data/GPL96.soft", destdir = "data")
 datatable(Table(gpl96)[Table(gpl96)[,"ID"] %in% up.ids,c("ID","Gene Symbol","Gene Title")]) # Extract annotation for up.ids
 ```
 
