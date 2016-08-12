@@ -7,23 +7,30 @@ output: html_document
 ```{r setup, echo=FALSE}
 # Set up the environment
 library(knitr) 
-opts_chunk$set(cache.path='cache/', fig.path='img/', cache=T, tidy=T, fig.keep='high', echo=T, dpi=300, out.width=700)
+opts_chunk$set(cache.path='cache/', fig.path='img/', cache=T, tidy=T, fig.keep='high', echo=T, dpi=100, out.width=700)
 options(replace.assign=TRUE, width=220)
-suppressMessages(library(pander))
-panderOptions('table.split.table', Inf)
+options(stringsAsFactors = FALSE)
 set.seed(1)
 ```
 
-Differential expression review with limma
-===
+```{r}
+library(DT)
+library(ALL)
+library(limma)
+library(hgu95av2.db) # Load an annotation package for this platform
+# biocLite("topGO")
+library(topGO)
+```
+
+# Differential expression review with limma
+
 Before proceeding into GOEA and other enrichment analyses, we need a list of probes and differential expression p-values. Here, we review limma usage with the ALL dataset. 
 
 The ALL dataset has many covariates, which you can view with
 
 ```{r}
-suppressMessages(library(ALL))
 data(ALL) # Load actual dataset
-pander(head(pData(ALL)))
+datatable(pData(ALL))
 colnames(pData(ALL)) # Which phenotype data we have
 ```
 
@@ -32,62 +39,60 @@ The ALL dataset contains either B-cell or T-cell leukemias, and  various cytogen
 Probably 90% of all differential expression analyses have been done with two-group design, like "healthy controls" vs. "disease". Here, we are looking at a multifactorial design.
 
 ```{r}
-library(limma)
 pd <- pData(ALL)
-# limma disallows "operator" characters in factor names
+# limma disallows special characters in factor names
 mol.biol <- make.names(pd$mol.biol) # Convenient wrapper to make names compatible with R internals
-groups <- factor(mol.biol, levels=unique(mol.biol))
-design <- model.matrix(~0+groups) # Multifactorial design matrix
+groups <- factor(mol.biol, levels = unique(mol.biol))
+design <- model.matrix(~0 + groups) # Multifactorial design matrix
 colnames(design) <- levels(groups)
-pander(head(design)) # Check your work
-contrast <- makeContrasts(BCR.ABLvsNEG=BCR.ABL-NEG, levels=design) # Define what to compare with what
-pander(contrast)
+datatable(design) # Check your work
+(contrast <- makeContrasts(BCR.ABLvsNEG = BCR.ABL-NEG, levels=design)) # Define what to compare with what
 M <- normalizeQuantiles(exprs(ALL)) # Normalize gene expression matrix before differential expression
 fit <- lmFit(M, design)
 fit.c <- contrasts.fit(fit, contrast)
 fit.c <- eBayes(fit.c)
-tt <- topTable(fit.c, number=nrow(exprs(ALL))) # All results of differential expression analysis
+tt <- topTable(fit.c, number=nrow(exprs(ALL)), coef = "BCR.ABLvsNEG", adjust.method = "BH", p.value = 0.05) # All results of differential expression analysis
 # For the enrichment analysis, we extract a vector of adjusted p-values, named by probe IDs
 p.values <- tt$adj.P.Val
 names(p.values) <- rownames(tt)
-pander(head(as.matrix(p.values)))
+datatable(as.matrix(p.values))
 ```
 
 Optionally, we check which gene NAMEs are differentially expressed
+
 ```{r}
 result <- decideTests(fit.c) # Correct the results for multiple testing
 sig.probes <- rownames(result)[result!=0] # Pull up the probe names 
 
 ALL@annotation # Check which microarray platform was used. Or, annotattion(ALL)
-suppressMessages(library(hgu95av2.db)) # Load an annotation package for this platform
 xx <- as.list(hgu95av2SYMBOL) # Get full mapping table for probes to gene names
 sig.symbols <- unlist(xx[sig.probes]) # Extract gene names from the significant probes
 head(sig.symbols) # Check your work
 length(unique(sig.symbols)) # How many significant genes are there?
 ```
 
-Gene Ontology Enrichment Analysis
-===
-The *topGO* package is a gold standard for microarray differential expression analysis. We need to create a topGOdata object from pieces we obtained from limma analysis.
-```{r}
-# biocLite("topGO")
-suppressMessages(library(topGO))
+# Gene Ontology Enrichment Analysis
 
+The *topGO* package is a gold standard for microarray differential expression analysis. We need to create a topGOdata object from pieces we obtained from limma analysis.
+
+```{r}
 sel.fn <- function(p.vals) { p.vals < 0.01 } # Returns a subset of most significant probes
 affyLib <- paste(annotation(ALL), "db", sep=".")
 go.data <- new("topGOdata",
-               ontology="BP", allGenes=p.values, geneSel=sel.fn,
-               nodeSize=10, # search GO terms with >= 10 genes
-               annot=annFUN.db, affyLib='hgu95av2.db')
+               ontology = "BP", allGenes = p.values, geneSel = sel.fn,
+               nodeSize = 10, # search GO terms with >= 10 genes
+               annot = annFUN.db, affyLib = 'hgu95av2.db')
 ```
 
 A variety of algorithms and ranking statistics are available for running the actual enrichment step. A list of algorithms and tests can be found by calling:
+
 ```{r}
 whichAlgorithms()
 whichTests()
 ```
 
 We try a couple:
+
 ```{r, message=FALSE}
 result <- runTest(go.data, algorithm="classic", statistic="fisher")
 result.01 <- runTest(go.data, algorithm="weight01", statistic="fisher")
@@ -95,21 +100,22 @@ result
 ```
 
 View the top results from multiple methods in tabular format
+
 ```{r}
-pander(GenTable(go.data, result, result.01))
+datatable(GenTable(go.data, result, result.01))
 ```
 
 Let's have a look at the results in the context of the GO DAG.
 
-Very small text. This can be easier to read if you save into an external file with png() and dev.off(). You may need to have graphviz headers and binaries installed on your system for this to work.
 ```{r}
-# biocLite("Rgraphviz")
-suppressMessages(library("Rgraphviz"))
-showSigOfNodes(go.data, score(result), firstSigNodes=3, useInfo="all")
+showSigOfNodes(go.data, score(result), firstSigNodes = 3, useInfo = "all")
 ```
 
-Creating a custom enrichment analysis
-===
+Very small text. This can be easier to read if you save into an external file with pdf() and dev.off(). 
+
+
+# Creating a custom enrichment analysis
+
 At its core, enrichment analysis is very simple. You have a list of genes, a list of categories, and a list of gene-category associations.
 
 The question is, given a list of genes (for example, the top differentially expressed genes from an experiment), what categories are these genes statistically enriched for? The standard test for this is Fisher Exact.
@@ -117,115 +123,15 @@ The question is, given a list of genes (for example, the top differentially expr
 This simplicity means enrichment analysis is very broadly applicable. Any time you have a data source that annotates genes with categories, you can use enrichment analysis.
 
 Back to our example with genes enrched in angiogenesis.
+
 * Out of 12,350 genes, 185 are involved in “Angiogenesis”. 
 * In our experiment, out of 200 differentially expressed genes 35 are annotated with “Angiogenesis” function
+
 ```{r}
 # Fisher Exact test with contingency table
-ct <- matrix(c(35,165,150,12000),byrow=T,nrow=2)
+ct <- matrix(c(35, 165, 150, 12000), byrow = T, nrow = 2)
 ct
-fisher.test(ct, alternative="greater")
+fisher.test(ct, alternative = "greater")
 ```
 
-We can wrap it up into a "universal" function that does either GO or KEGG enrichment analysis. First, we load libraries and prepare mapping tables.
-
-```{r}
-# Load necessary packages
-suppressMessages(library(Biobase))
-suppressMessages(library(org.Hs.eg.db))
-suppressMessages(library(reactome.db))
-suppressMessages(library(KEGG.db))
-#suppressMessages(library(arrayQualityMetrics)) 
-#suppressMessages(library(limma))
-#suppressMessages(library(genefilter))
-#suppressMessages(library(sva))
-#suppressMessages(library(WGCNA))
-#suppressMessages(library(gplots))
-#suppressMessages(library(RColorBrewer))
-#suppressMessages(library(tspair))
-suppressMessages(library(gridExtra))
-suppressMessages(library(GO.db))
-suppressMessages(library(GOstats))
-suppressMessages(library(Hmisc))
-# Preparing environment for remapping Gene Symbols to Entrez IDs
-x <- org.Hs.egSYMBOL2EG
-# Get the entrez gene identifiers that are mapped to a gene symbol
-mapped_genes <- mappedkeys(x)
-# Convert to a list
-xx <- as.list(x[mapped_genes])
-```
-
-And, the function itself.
-```{r}
-## Perform GO or KEGG enrichment analysis of a list of gene symbols or EntrezIDs
-##
-## Parameters
-##     res - a character vector of gene IDs
-##     id - what type of ID is provided, "hgnc_symbol" or "entrezgene"
-##     use - Which analysis to perform, "GO" or "KEGG"
-##     ont - If "GO", which namespace to use, "MF", "BP", of "CC". Not used in "KEGG" analysis
-##     fileName - save the results into a file
-##
-## Returns a data frame of top 20, or less, significant enrichments
-## Saves gene names for each of the enriched GO or KEGG at the end of the file
-##
-## Usage: 
-##     enrichmentGO <- Enrichment(gene_names_list, id="hgnc_symbol", use="GO", , ont="MF")
-##     enrichmentPW <- Enrichment(gene_names_list, id="entrezgene", use="KEGG", "results.txt")
-##
-Enrichment <- function(res, id="symbol", use="GO", ont="BP", fileName=NULL)
-{
-    if (id == "symbol"){
-    # Convert selected and all gene names to Entrez IDs, removing NAs
-    sel.entrez <- unlist(xx)[res]; sel.entrez <- sel.entrez[!is.na(sel.entrez)]
-    all.entrez <- unlist(xx); all.entrez <- all.entrez[!is.na(all.entrez)]    
-  } else if (id == "entrezgene"){
-    sel.entrez <- res
-    all.entrez <- unique(c(sel.entrez, unlist(xx)))
-  } else {
-    return("Wrong gene id type. Use 'hgnc_symbol' or 'entrezgene'")
-  }
-  # Prepare parameters for the enrichment analysis
-  if (use == "GO")
-    {
-    params <- new('GOHyperGParams', geneIds=sel.entrez, universeGeneIds=all.entrez, ontology=ont,
- pvalueCutoff=0.05, conditional=F, testDirection='over', annotation="org.Hs.eg.db")
-    }
- else
-   {
-    params <- new('KEGGHyperGParams', geneIds=sel.entrez, universeGeneIds=all.entrez, pvalueCutoff=0.05, testDirection='over', annotation="org.Hs.eg.db") 
-   }
-  hgOver <- hyperGTest(params)
-  result <- summary(hgOver)
-  result <- cbind(result, p.adjust(result$Pvalue, method="BH")) # Append corrected for multiple testing p-value
-  colnames(result)[length(colnames(result))] <- "p.adj"
-  result <- result[result$p.adj < 0.1, ] # Subset the results keeping FDR at 10%
-  if (!is.null(fileName)) {
-    write.table(result, fileName, sep="\t", row.names=F)
-    # In addition to saving the enrichment results
-    # save genes in each GO category
-    if (id == "entrezgene") { keytype <- "ENTREZID" }
-    if (id == "hgnc_symbol") { keytype <- "SYMBOL" }
-    if (use == "GO" & nrow(result) > 0) {
-        geneList.go <- select(org.Hs.eg.db,
-                           keys = res,
-                           columns=c("ENTREZID","SYMBOL","GOALL"),
-                           keytype=keytype)
-        for (i in 1:nrow(result)) {
-          write.table(paste(result[i, 1], paste(sort(unique(geneList.go$SYMBOL[ geneList.go$GOALL == result[i, 1]])), collapse=","), collapse="\t"), fileName, sep="\t", col.names=F, row.names=F, append=T)
-        }
-    }
-    if (use == "KEGG" & nrow(result) > 0) {
-        geneList.go <- select(org.Hs.eg.db,
-                           keys = res,
-                           columns=c("ENTREZID","SYMBOL","PATH"),
-                           keytype=keytype)
-        for (i in 1:nrow(result)) {
-          write.table(paste(result[i, 1], paste(sort(unique(geneList.go$SYMBOL[ geneList.go$PATH == result[i, 1]])), collapse=","), collapse="\t"), fileName, sep="\t", col.names=F, row.names=F, append=T)
-        }
-    }
-  }
-  ifelse(nrow(result) > 20, n <- 20, n <-nrow(result)) # Save top 20 or less enrichment results
-  return(result[1:n, ])
-}
-```
-
+We can wrap it up into a "universal" function that does either GO or KEGG enrichment analysis. see the example at [https://github.com/mdozmorov/MDmisc/blob/master/R/gene_enrichment.R](https://github.com/mdozmorov/MDmisc/blob/master/R/gene_enrichment.R)
