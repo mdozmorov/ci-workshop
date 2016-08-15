@@ -49,11 +49,16 @@ plot(y[,1], y[,2], log="xy") # Generates the same plot as above, but on log scal
 plot(y[,1], y[,2]); text(y[1,1], y[1,2], expression(sum(frac(1,sqrt(x^2*pi)))), cex=1.3) # Adds a mathematical formula to the plot.
 plot(y) # Produces all possible scatter plots for all-against-all columns in a matrix or a data frame. The column headers of the matrix or data frame are used as axis titles.
 pairs(y) # Alternative way to produce all possible scatter plots for all-against-all columns in a matrix or a data frame.
-biocLite("scatterplot3d"); library(scatterplot3d); scatterplot3d(y[,1:3], pch=20, color="red") # Plots a 3D scatter plot for first three columns in y.
-biocLite("geneplotter"); library(geneplotter); smoothScatter(y[,1], y[,2]) # Same as above, but generates a smooth scatter plot that shows the density of the data points.
+# biocLite("scatterplot3d")
+library(scatterplot3d)
+scatterplot3d(y[,1:3], pch=20, color="red") # Plots a 3D scatter plot for first three columns in y.
+# biocLite("geneplotter")
+library(geneplotter)
+smoothScatter(y[,1], y[,2]) # Same as above, but generates a smooth scatter plot that shows the density of the data points.
 
 # lattice
-biocLite("lattice"); library(lattice)
+# biocLite("lattice")
+library(lattice)
 xyplot(1:10 ~ 1:10) # Simple scatter plot. 
 xyplot(1:10 ~ 1:10 | rep(LETTERS[1:5], each=2), as.table=TRUE) # Plots subcomponents specified by grouping vector after '|' in separate panels. The argument as.table controls the order of the panels. 
 myplot <- xyplot(Petal.Width ~ Sepal.Width | Species , data = iris); print(myplot) # Assigns plotting function to an object and executes it.
@@ -69,7 +74,8 @@ xyplot(1:10 ~ 1:10 | rep(LETTERS[1:5], each=2), as.table=TRUE, layout=c(1,5,1), 
 trellis.par.set(default)
 
 # ggplot2
-biocLite("ggplot2"); library(ggplot2)
+# biocLite("ggplot2")
+library(ggplot2)
 ggplot(iris, aes(Sepal.Length, Sepal.Width)) + geom_point() # Plots two vectors (columns) in form of a scatter plot against each other.
 ggplot(iris, aes(Sepal.Length, Sepal.Width)) + geom_point(aes(color = Species), size=4) # Plots larger dots and colors them with default color scheme.
 ggplot(iris, aes(Sepal.Length, Sepal.Width)) + geom_point(aes(color = Species), size=4) + ylim(2,4) + xlim(4,8) + scale_color_manual(values=rainbow(10)) # Colors dots with custom scheme.

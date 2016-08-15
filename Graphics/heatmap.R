@@ -1,5 +1,5 @@
-source("http://www.bioconductor.org/biocLite.R")
-biocLite("ALL") # Install ALL package
+# source("http://www.bioconductor.org/biocLite.R")
+# biocLite("ALL") # Install ALL package
 library("ALL") # Load ALL package
 data("ALL") # Attach ALL data to the workspace
 ALL # Check what's in there
@@ -38,7 +38,7 @@ dev.off()
 unlink("test.pdf") # Delete file
 # Extracting subclustered groups
 colDendrogram<-(hclust(dist(t(exprs(esetSel)),method="euclidean"),method="complete")) # Make column dendrogram
-plot(tmp1) # visualized
+plot(colDendrogram) # visualized
 cutree(colDendrogram,h=25) # Sample-group assignment, h - height
 cutree(colDendrogram, k=2) # Same effect, k - number of groups
 sort(cutree(colDendrogram, k=2)) # Sort for easier group separation
