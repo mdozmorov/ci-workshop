@@ -1,11 +1,13 @@
 ---
 title: "GEO"
 author: "Mikhail Dozmorov"
+date: '`r Sys.Date()`'
 output:
+  pdf_document:
+    toc: yes
   html_document:
-    toc: true
     theme: united
-date: "`r Sys.Date()`"
+    toc: yes
 ---
 
 Material is public domain
@@ -13,7 +15,7 @@ Material is public domain
 ```{r setup, echo=FALSE}
 # Set up the environment
 library(knitr) 
-opts_chunk$set(cache.path='cache/', fig.path='img/', cache=T, tidy=T, fig.keep='high', echo=T, dpi=100, out.width=700)
+opts_chunk$set(cache.path='cache/', fig.path='img/', cache=T, tidy=T, fig.keep='high', echo=T, dpi=100, out.width=700, warning = FALSE)
 options(replace.assign=TRUE, width=220)
 options(stringsAsFactors = FALSE)
 set.seed(1)
@@ -52,7 +54,7 @@ gds858 <- getGEO(filename='../data/GDS858.soft.gz', destdir="../data/")
 
 The SOFT file is available in compressed form here GDS858.soft.gz, but GEOquery takes care of finding this file for you and unzipping it automatically.
 
-There are two main things the GDS object gives us, meta data (from the file header) and a table of expression data. These are extracted using the Meta and Table functions. First lets have a look at the metadata:
+There are two main things the GDS object gives us, meta data (from the file header) and a table of expression data. These are extracted using the `Meta` and `Table` functions. First lets have a look at the metadata:
 
 ```{r}
 Meta(gds858)$channel_count
@@ -124,4 +126,4 @@ Lets look at the first four columns, for the first ten genes:
 Table(gpl96)[1:10,1:4]
 ```
 
-You can also use Bioconductor annotation file for GPL96/HG-U133A by using library(hgu133a).
+You can also use Bioconductor annotation file for GPL96/HG-U133A by using `library(hgu133a)`.
