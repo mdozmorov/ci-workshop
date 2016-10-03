@@ -30,7 +30,7 @@ We will discuss how to load GEO SOFT format microarray data from the Gene Expres
 - `GEO Platform (GPL)` - These files describe a particular type of microarray. They are annotation files.
 - `GEO Sample (GSM)` - Files that contain all the data from the use of a single chip. For each gene there will be multiple scores including the main one, held in the VALUE column.
 - `GEO Series (GSE)` - Lists of GSM files that together form a single experiment.
-- `GEO Dataset (GDS)` - These are curated files that hold a summarised combination of a GSE file and its GSM files. They contain normalised expression levels for each gene from each sample (i.e. just the VALUE field from the GSM file).
+- `GEO Dataset (GDS)` - These are curated files that hold a summarized combination of a GSE file and its GSM files. They contain normalized expression levels for each gene from each sample (i.e. just the VALUE field from the GSM file).
 
 As long as you just need the expression level then a GDS file will suffice. If you need to dig deeper into how the expression levels were calculated, you'll need to get all the GSM files instead (which are listed in the GDS or GSE file)
 

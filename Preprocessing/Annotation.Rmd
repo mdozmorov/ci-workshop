@@ -4,7 +4,7 @@ author: "Mikhail Dozmorov"
 date: '`r Sys.Date()`'
 output:
   pdf_document:
-    toc: yes
+    toc: no
   html_document:
     theme: united
     toc: yes
@@ -27,7 +27,7 @@ Any given experiment typically involves a set of known identifers (probes
 in the case of a microarray experiment). These identifers are typically unique
 (for any manufacturer). But having Affymetrix IDs ("1001_at") as probe identifiers is not very helpful when we want to know which gene a probe is actually assesses. There are numerous annotation packages available on Bioconductor at [http://www.bioconductor.org/packages/release/data/annotation/](http://www.bioconductor.org/packages/release/data/annotation/).
 
-We will consider the AFFymetrix human gene chip, hgu133a, for our example. We first load this chip's package and annotate.
+We will consider the Affymetrix human gene chip, hgu133a, for our example. We first load this chip's package and annotate.
 
 ```{r}
 library("annotate")
@@ -36,7 +36,7 @@ library("hgu133a.db")
 ls("package:hgu133a.db") # Objects in this package
 ```
 
-We see the listing of twenty or thirty different R objects in this package. Most of them represent mappings from the identifiers on the Affymetrix chip to the different biological resources and you can find out more about them by using the R help system, since each has a manual page that describes the data together with other information such as where, when and what files were used to construct the mappings. Also, each meta-data package has one object that has the same name as the package basename, in this case it is hgu133a. This is function and it can be invoked to find out some of the different statistics regarding the mappings that were done. Its manual page lists all data resources that were used to create the meta-data package.
+We see the listing of 36 different R objects in this package. Most of them represent mappings from the identifiers on the Affymetrix chip to the different biological resources. You can find out more about them by using the R help system, since each has a manual page that describes the data together with other information such as where, when and what files were used to construct the mappings. Also, each meta-data package has one object that has the same name as the package basename, in this case it is hgu133a. This is function and it can be invoked to find out some of the different statistics regarding the mappings that were done. Its manual page lists all data resources that were used to create the meta-data package.
 
 ```{r}
 hgu133a() # Description of an object
@@ -87,7 +87,7 @@ probes <- c("215134_at", "221987_s_at", "214740_at", "205903_s_at")
 entrez <- unlist(probe2entrez[probes])
 ```
 
-The "unlist" method above only works when you have a "many-to-one" or "one-to-one" mapping of keys to values. If you have "one-to-many" or "many-to-many", you will  get back several mapped values for each key:
+The `unlist` method above only works when you have a "many-to-one" or "one-to-one" mapping of keys to values. If you have "one-to-many" or "many-to-many", you will  get back several mapped values for each key:
 
 ```{r}
 entrez2probe[entrez]
