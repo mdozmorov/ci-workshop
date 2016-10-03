@@ -4,7 +4,7 @@ author: "Mikhail Dozmorov"
 date: '`r Sys.Date()`'
 output:
   pdf_document:
-    toc: yes
+    toc: no
   html_document:
     theme: united
     toc: yes
@@ -23,11 +23,11 @@ set.seed(1)
 
 ### genefilter & collapseRows - removing genes with certain properties before DE analysis
 
-Filtering any unimportant genes before differential expression (DE) analysis is quite desirable because it increases the statistical power of your differential expression analysis. In other words, a smaller gene set suffers less of a hit from multiple testing correction.
+Filtering any unimportant genes before differential expression (DE) analysis is quite desirable because it increases the statistical power of your differential expression analysis. In other words, a smaller gene set suffers less of a hit from multiple testing correction. 
 
 Another potential use for filtering is reducing the feature space for prediction analysis. This will cause models to be trained faster and probably to have less variance.
 
-Of course, the tradeoff in both cases is that the genes you filter may be false negatives: that they may be truly differentially expressed or may carry unique predictive power.
+Of course, the tradeoff in both cases is that the genes you filter may be false negatives: that they may be truly differentially expressed or may carry unique predictive power. Filtering also reduces variability needed for proper functionality of the `limma` package [https://www.ncbi.nlm.nih.gov/pubmed/20460310](https://www.ncbi.nlm.nih.gov/pubmed/20460310).
 
 ```{r}
 library(ALL)
