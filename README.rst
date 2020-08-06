@@ -64,13 +64,11 @@ If you use vim, a combination of vim-slime with tmux or screen works well.
 If you use emacs, the ESS (Emacs Speaks Statistics) package is popular among R users.
 
 ====================
->>>>>>> 86b51159ffa443c6469cd84d7e76075d195ee4a4
 Additional Resources
 ====================
 
 This section contains links to supplementary information and tutorials which go beyond the general introduction given by the course.
 
-<<<<<<< HEAD
 General resources
 ~~~~~~~~~~~~~~~~~
 
@@ -81,11 +79,9 @@ RNA-seq analysis
 
 - http://www.bioconductor.org/help/course-materials/2011/RNASeqChIPSeq/
 - http://www.bioconductor.org/help/course-materials/2011/RNASeqChIPSeq/Lectures/SequenceAnalysis-slides.pdf
-=======
 - http://www.biostars.com/
 - http://stat.ethz.ch/pipermail/bioconductor/
 - http://cran.r-project.org/doc/contrib/refcard.pdf
 - http://cran.r-project.org/manuals.html
 - http://bioinformatics.mdanderson.org/MicroarrayCourse/
 - https://www.coursera.org/course/compdata
->>>>>>> 86b51159ffa443c6469cd84d7e76075d195ee4a4
