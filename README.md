@@ -34,12 +34,9 @@ TODO
 -   Write \"Prerequisites\" section, to include links to R, RStudio,
     install Bioconductor
 -   Have CEL files, GDS858.soft.gz, GPL96.soft available offline
+-   1:30 - 3:30 \| Array CGH & Intermediate R (CG) 
 
-+----------------------------------------------------+
-| -   1:30 - 3:30 \| Array CGH & Intermediate R (CG) |
-+----------------------------------------------------+
-| Prerequisites                                      |
-+----------------------------------------------------+
+# Prerequisites 
 
 ### R base
 
